@@ -37,23 +37,22 @@ class CaseRetriever(object):
         :param index: limit the search to index
         :param doc_type: only query this `_type`
         """
+        self._hosts = hosts
+        self._auth_user = auth_user
+        self._auth_pwd = auth_pwd
         self.index = index
         self.doc_type = doc_type
-        self.client = self._init_client(hosts, auth_user, auth_pwd)
+        self.client = self._init_client()
 
-    @classmethod
-    def _init_client(cls,
-                     hosts: Union[List[str], Tuple[str]] = config.ES_HOSTS,
-                     auth_user: str = None,
-                     auth_pwd: str = None):
-        if auth_user and auth_pwd:
+    def _init_client(self):
+        if self._auth_user and self._auth_pwd:
             return Elasticsearch(
-                hosts=hosts,
-                http_auth=(auth_user, auth_pwd),
+                hosts=self._hosts,
+                http_auth=(self._auth_user, self._auth_pwd),
                 timeout=60
             )
         else:
-            return Elasticsearch(hosts, timeout=60)
+            return Elasticsearch(self._hosts, timeout=60)
 
     def get_client(self):
         """
