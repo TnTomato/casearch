@@ -5,14 +5,24 @@
 # @Time: 2019/8/23 14:07
 
 
+import io
+import re
+
 from setuptools import setup, find_packages
+
+with io.open("README.rst", "rt", encoding="utf8") as f:
+        readme = f.read()
+
+with io.open("src/flask/__init__.py", "rt", encoding="utf8") as f:
+    version = re.search(r'__version__ = "(.*?)"', f.read()).group(1)
 
 setup(
     name='casearch',
-    version='0.0.2',
+    version=version,
     author='TnTomato',
     author_email='474093103@qq.com',
     description='Retrieve from ElasticSearch',
+    long_description=readme,
     url='https://github.com/EathonTnT/casearch',
     license='MIT',
     packages=find_packages(exclude='test'),

@@ -9,3 +9,5 @@ from casearch.retrieve import CaseRetriever
 
 
 __all__ = ['CaseRetriever']
+
+__version__ = '0.0.2'
