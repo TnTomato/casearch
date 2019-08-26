@@ -1,0 +1,17 @@
+.env
+*.pyc
+*.pyo
+env/
+env*
+dist/
+build/
+*.egg
+*.egg-info/
+_mailinglist
+.tox/
+.cache/
+.pytest_cache/
+.idea/
+
+Pipfile
+Pipfile.lock
