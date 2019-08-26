@@ -15,8 +15,7 @@ setup(
     description='Retrieve from ElasticSearch',
     url='https://github.com/EathonTnT/casearch',
     license='MIT',
-    packages=find_packages('casearch'),
-    package_dir={'': 'casearch'},
+    packages=find_packages(exclude='test'),
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
     install_requires=[
         'elasticsearch>=6.3.0',
