@@ -10,11 +10,11 @@ import re
 
 from setuptools import setup, find_packages
 
-with io.open("README.rst", "rt", encoding="utf8") as f:
+with io.open('README.rst', 'rt', encoding='utf-8') as f:
         readme = f.read()
 
-with io.open("src/flask/__init__.py", "rt", encoding="utf8") as f:
-    version = re.search(r'__version__ = "(.*?)"', f.read()).group(1)
+with io.open('casearch/__init__.py', 'rt', encoding='utf-8') as f:
+    version = re.search(r'__version__ = (.*?)', f.read()).group(1)
 
 setup(
     name='casearch',
