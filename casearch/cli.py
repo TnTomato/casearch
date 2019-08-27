@@ -293,7 +293,7 @@ def sync(worker, size, db, case, field, index, type, flag):
     pool.join()
 
 
-command_coll = click.CommandCollection(sources=[cli])
+command = click.CommandCollection(sources=[cli])
 
 if __name__ == '__main__':
-    command_coll()
+    command()

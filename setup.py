@@ -34,6 +34,6 @@ setup(
         'python-dotenv>=0.10.0'
     ],
     entry_points={
-        'console_scripts': ['casearch = casearch.cli:sync']
+        'console_scripts': ['casearch = casearch.cli:command']
     }
 )

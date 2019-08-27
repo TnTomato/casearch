@@ -5,7 +5,7 @@
 # @Time: 2019/8/23 14:07
 
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
 from casearch.retrieve import CaseRetriever
 
