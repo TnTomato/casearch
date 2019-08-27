@@ -30,7 +30,6 @@ setup(
         'elasticsearch>=6.3.0',
         'elasticsearch_dsl>=6.3.0',
         'click>=7.0',
-        'bson>=0.5.0',
         'pymongo>=3.0.0',
         'python-dotenv>=0.10.0'
     ],

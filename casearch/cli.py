@@ -16,7 +16,7 @@ from elasticsearch import Elasticsearch, helpers
 from pymongo import MongoClient
 
 from casearch.config import (
-    ES_HOSTS, ES_USER, ES_PASSWD,MONGODB_HOST, MONGODB_PORT, MONGODB_USER,
+    ES_HOSTS, ES_USER, ES_PASSWD, MONGODB_HOST, MONGODB_PORT, MONGODB_USER,
     MONGODB_PASSWD, MONGODB_DB
 )
 
