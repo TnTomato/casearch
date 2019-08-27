@@ -223,7 +223,12 @@ def _run(case_docs, field_coll, index, type):
     click.echo(f'Success and failure: {res}')
 
 
-@click.command('sync', short_help='Sync data from MongoDB to Elasticsearch.')
+@click.group()
+def cli():
+    pass
+
+
+@cli.command('sync', short_help='Sync data from MongoDB to Elasticsearch.')
 @click.option(
     '--worker',
     '-w',
@@ -288,5 +293,7 @@ def sync(worker, size, db, case, field, index, type, flag):
     pool.join()
 
 
+command_coll = click.CommandCollection(sources=[cli])
+
 if __name__ == '__main__':
-    sync()
+    command_coll()
