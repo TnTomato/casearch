@@ -6,9 +6,9 @@
 
 
 import os
+from dotenv import load_dotenv, find_dotenv
 
-
-__all__ = ['ES_HOSTS', 'ES_USER', 'ES_PASSWD']
+load_dotenv(find_dotenv())
 
 if os.getenv('ESHOSTS'):
     host_value = os.getenv('ESHOSTS')
@@ -17,3 +17,9 @@ else:
 ES_HOSTS = host_value.split(' ')
 ES_USER = os.getenv('ESUSER')
 ES_PASSWD = os.getenv('ESPASSWD')
+
+MONGODB_HOST = os.getenv('MONGOHOST') or '127.0.0.1'
+MONGODB_PORT = os.getenv('MONGOPORT') or 27017
+MONGODB_USER = os.getenv('MONGOUSER')
+MONGODB_PASSWD = os.getenv('MONGOPASSWD')
+MONGODB_DB = os.getenv('MONGODB')

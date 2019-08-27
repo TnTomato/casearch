@@ -5,19 +5,13 @@
 # @Time: 2019/8/23 15:11
 
 
-import logging
 from typing import Union, List, Tuple
 
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, Q
 
 from casearch import config
-
-
-logging.basicConfig(format='[%(asctime)s] %(levelname)s %(message)s',
-                    datefmt="%y-%m-%d %H:%M:%S",
-                    level=logging.INFO)
-logger = logging.getLogger()
+from casearch.log import logger
 
 
 class CaseRetriever(object):
@@ -70,7 +64,7 @@ class CaseRetriever(object):
         s = s.query('term', id=id_)
         response = s.execute()
         if not response.hits:
-            raise ValueError('Document with id: `{}` not found'.format(id_))
+            raise ValueError(f'Document with id: `{id_}` not found')
         result = response.hits[0].to_dict()
         return result
 
@@ -121,6 +115,6 @@ class CaseRetriever(object):
         # Pagination
         s = s[(page - 1) * size:size * page]
 
-        logger.info('Retriever DSL: {}'.format(s.to_dict()))
+        logger.info(f'Retriever DSL: {s.to_dict()}')
         result = [hit.to_dict() for hit in s]
         return result

@@ -26,9 +26,16 @@ setup(
     url='https://github.com/EathonTnT/casearch',
     license='MIT',
     packages=find_packages(exclude='test'),
-    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
+    python_requires='>=3.6',
     install_requires=[
         'elasticsearch>=6.3.0',
-        'elasticsearch_dsl>=6.3.0'
-    ]
+        'elasticsearch_dsl>=6.3.0',
+        'click>=7.0',
+        'bson>=0.5.0',
+        'pymongo>=3.0.0',
+        'python-dotenv>=0.10.0'
+    ],
+    entry_points={
+        'console_scripts': ['casearch = casearch.cli:sync']
+    }
 )
