@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Author: ZhangXiaocheng
-# @File: setup.py.py
+# @File: setup.py
 # @Time: 2019/8/23 14:07
 
 
