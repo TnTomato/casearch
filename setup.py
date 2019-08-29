@@ -22,6 +22,7 @@ setup(
     author='TnTomato',
     author_email='474093103@qq.com',
     description='Retrieve from ElasticSearch',
+    long_description=readme,
     url='https://github.com/EathonTnT/casearch',
     license='MIT',
     packages=find_packages(exclude='test'),
