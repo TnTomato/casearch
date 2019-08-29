@@ -5,14 +5,15 @@
 # @Time: 2019/8/27 14:15
 
 
-import click
 import multiprocessing
 from ctypes import c_char_p
 from multiprocessing import Pool, Value
 from urllib.parse import quote_plus
 
+import click
 from bson.objectid import ObjectId
 from elasticsearch import Elasticsearch, helpers
+from elasticsearch.exceptions import NotFoundError, RequestError
 from pymongo import MongoClient
 
 from casearch.config import (
@@ -26,6 +27,128 @@ if not MONGODB_USER and not MONGODB_PASSWD and not MONGODB_DB:
     _mongo_uri = f'mongodb://{MONGODB_HOST}:{MONGODB_PORT}'
 else:
     _mongo_uri = f'mongodb://{quote_plus(MONGODB_USER)}:{quote_plus(MONGODB_PASSWD)}@{MONGODB_HOST}:{MONGODB_PORT}/{MONGODB_DB}'
+
+_mapping = {
+    'mappings': {
+        '_doc': {
+            'properties': {
+                'id': {
+                    'type': 'keyword'
+                },
+                'title': {
+                    'type': 'text',
+                    'analyzer': 'smart_analyzer'
+                },
+                'decide_date': {
+                    'type': 'date',
+                    'format': 'yyyy-MM-dd'
+                },
+                'doc_type': {
+                    'type': 'keyword'
+                },
+                'judicial_officers': {
+                    'type': 'text',
+                    'analyzer': 'whitespace'
+                },
+                'attorney': {
+                    'type': 'nested',
+                    'properties': {
+                        'name': {
+                            'type': 'keyword'
+                        },
+                        'lawoffice': {
+                            'type': 'text',
+                            'analyzer': 'smart_analyzer'
+                        }
+                    }
+                },
+                'court': {
+                    'type': 'text',
+                    'analyzer': 'smart_analyzer'
+                },
+                'trial_round': {
+                    'type': 'keyword'
+                },
+                'cause': {
+                    'type': 'text',
+                    'analyzer': 'whitespace'
+                },
+                'case_number': {
+                    'type': 'keyword'
+                },
+                'case_number_year': {
+                    'type': 'integer'
+                },
+                'accuser': {
+                    'type': 'text',
+                    'analyzer': 'whitespace'
+                },
+                'accused': {
+                    'type': 'text',
+                    'analyzer': 'whitespace'
+                },
+                'paras': {
+                    'type': 'nested',
+                    'properties': {
+                        'tag': {
+                            'type': 'keyword'
+                        },
+                        'content': {
+                            'type': 'text',
+                            'analyzer': 'smart_analyzer'
+                        }
+                    }
+                },
+                'fulltext': {
+                    'type': 'text',
+                    'analyzer': 'smart_analyzer'
+                },
+                'province': {
+                    'type': 'keyword'
+                },
+                'city': {
+                    'type': 'keyword'
+                },
+                'top_cause': {
+                    'type': 'keyword'
+                },
+                'codes': {
+                    'type': 'nested',
+                    'properties': {
+                        'code_name': {
+                            'type': 'text',
+                            'analyzer': 'smart_analyzer'
+                        },
+                        'clauses': {
+                            'type': 'text',
+                            'analyzer': 'whitespace'
+                        }
+                    }
+                },
+                'fields': {
+                    'type': 'nested',
+                    'properties': {
+                        'name': {
+                            'type': 'keyword'
+                        },
+                        'value': {
+                            'type': 'float'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+def _get_es():
+    es = Elasticsearch(
+        hosts=ES_HOSTS,
+        http_auth=(ES_USER, ES_PASSWD),
+        timeout=60
+    )
+    return es
 
 
 def _get_docs(coll, query=None, projection=None, size=100, oid=None):
@@ -52,11 +175,7 @@ def _get_docs(coll, query=None, projection=None, size=100, oid=None):
 
 
 def _run(case_docs, field_coll, index, type):
-    _es = Elasticsearch(
-        hosts=ES_HOSTS,
-        http_auth=(ES_USER, ES_PASSWD),
-        timeout=60
-    )
+    es = _get_es()
     case_ids = [doc.get('id') for doc in case_docs if doc.get('id')]
     field_docs = field_coll.find({'id': {'$in': case_ids}})
     mapping = {}
@@ -217,7 +336,7 @@ def _run(case_docs, field_coll, index, type):
             '_source': source
         }
         actions.append(action)
-    res = helpers.bulk(_es, actions)
+    res = helpers.bulk(es, actions)
     click.echo(f'Success and failure: {res}')
 
 
@@ -226,7 +345,81 @@ def cli():
     pass
 
 
-@cli.command('sync', short_help='Sync data from MongoDB to Elasticsearch.')
+@cli.command('index', short_help='Create an index.')
+@click.option(
+    '--name',
+    '-n',
+    default='case_collection_v1',
+    help='Name of index.'
+)
+@click.option(
+    '--shard',
+    '-s',
+    default=5,
+    help='Number of shards of the index.'
+)
+@click.option(
+    '--replica',
+    '-r',
+    default=0,
+    help='Number of replicas of the index.'
+)
+def create_index(name, shard, replica):
+    es = _get_es()
+    _settings = {
+        'settings': {
+            'number_of_shards': shard,
+            'number_of_replicas': replica,
+            'analysis': {
+                'analyzer': {
+                    'max_analyzer': {
+                        'type': 'custom',
+                        'tokenizer': 'ik_max_word',
+                        'char_filter': [
+                            'html_strip'
+                        ]
+                    },
+                    'smart_analyzer': {
+                        'type': 'custom',
+                        'tokenizer': 'ik_smart',
+                        'char_filter': [
+                            'html_strip'
+                        ]
+                    }
+                }
+            }
+        }
+    }
+    _mapping.update(_settings)
+    try:
+        es.indices.create(index=name, body=_mapping)
+    except RequestError as e:
+        click.echo(f'Error: {e.info["error"]["reason"]}, '
+                   f'the option is canceled.')
+    else:
+        click.echo(f'Index `{name}` created!')
+
+
+@cli.command('drop', short_help='Drop the index of the given name.')
+@click.option('--name', '-n', help='Name of the index.')
+@click.confirmation_option(
+    prompt='Are you sure you want to drop this index?'
+)
+def drop_index(name):
+    es = _get_es()
+    try:
+        es.indices.delete(index=name)
+    except NotFoundError as e:
+        click.echo(f'Error: {e.info["error"]["reason"]}, '
+                   f'the option is canceled.')
+    else:
+        click.echo(f'Index `{name}` deleted!')
+
+
+@cli.command(
+    'sync',
+    short_help='Sync data from MongoDB to Elasticsearch.'
+)
 @click.option(
     '--worker',
     '-w',
