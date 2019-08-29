@@ -26,13 +26,6 @@ if not MONGODB_USER and not MONGODB_PASSWD and not MONGODB_DB:
     _mongo_uri = f'mongodb://{MONGODB_HOST}:{MONGODB_PORT}'
 else:
     _mongo_uri = f'mongodb://{quote_plus(MONGODB_USER)}:{quote_plus(MONGODB_PASSWD)}@{MONGODB_HOST}:{MONGODB_PORT}/{MONGODB_DB}'
-_client = MongoClient(_mongo_uri)
-
-_es = Elasticsearch(
-    hosts=ES_HOSTS,
-    http_auth=(ES_USER, ES_PASSWD),
-    timeout=60
-)
 
 
 def _get_docs(coll, query=None, projection=None, size=100, oid=None):
@@ -59,6 +52,11 @@ def _get_docs(coll, query=None, projection=None, size=100, oid=None):
 
 
 def _run(case_docs, field_coll, index, type):
+    _es = Elasticsearch(
+        hosts=ES_HOSTS,
+        http_auth=(ES_USER, ES_PASSWD),
+        timeout=60
+    )
     case_ids = [doc.get('id') for doc in case_docs if doc.get('id')]
     field_docs = field_coll.find({'id': {'$in': case_ids}})
     mapping = {}
@@ -267,6 +265,7 @@ def cli():
     help='The string type of _id in MongoDB marked as a start flag.'
 )
 def sync(worker, size, db, case, field, index, type, flag):
+    _client = MongoClient(_mongo_uri)
     case_db = _client[db]
     case_coll = case_db[case]
     field_coll = case_db[field]

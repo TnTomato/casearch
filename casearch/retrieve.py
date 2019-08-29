@@ -23,7 +23,7 @@ class CaseRetriever(object):
                  index: str = 'case_collection_v1',
                  doc_type: str = '_doc'):
         """
-        A case casearch instance.
+        A casearch instance.
 
         :param hosts: ES hosts
         :param auth_user: ES user(if authenticated)
@@ -115,6 +115,6 @@ class CaseRetriever(object):
         # Pagination
         s = s[(page - 1) * size:size * page]
 
-        logger.info(f'Retriever DSL: {s.to_dict()}')
+        logger.info(f'<Caseaerch> DSL: {s.to_dict()}')
         result = [hit.to_dict() for hit in s]
         return result
