@@ -12,12 +12,13 @@ A Simple Example
     import casearch
 
     c = casearch.CaseRetriever()
-    res = c.retrieve_by_tag(['涉牌涉证'],
+    res = c.retrieve_by_tag(['tag_name'],
                             filter={
-                                'causes': ['道路交通管理（道路）'],
-                                'province': '四川省',
-                                'city': '乐山市'
+                                'causes': ['cause_name'],
+                                'province': 'province_name',
+                                'city': 'city_name'
                             },
                             page=1,
                             size=5)
-The `res` is a list contains all found documents.
+    print(res)
+The output is a list contains all found documents.
