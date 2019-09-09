@@ -18,15 +18,15 @@ from pymongo import MongoClient
 
 from casearch.config import (
     ES_HOSTS, ES_USER, ES_PASSWD, MONGODB_HOST, MONGODB_PORT, MONGODB_USER,
-    MONGODB_PASSWD, MONGODB_DB
+    MONGODB_PASSWD, MONGODB_AUTH_DB
 )
 
 _DEFAULT_WORKER = multiprocessing.cpu_count()
 
-if not MONGODB_USER and not MONGODB_PASSWD and not MONGODB_DB:
+if not MONGODB_USER and not MONGODB_PASSWD and not MONGODB_AUTH_DB:
     _mongo_uri = f'mongodb://{MONGODB_HOST}:{MONGODB_PORT}'
 else:
-    _mongo_uri = f'mongodb://{quote_plus(MONGODB_USER)}:{quote_plus(MONGODB_PASSWD)}@{MONGODB_HOST}:{MONGODB_PORT}/{MONGODB_DB}'
+    _mongo_uri = f'mongodb://{quote_plus(MONGODB_USER)}:{quote_plus(MONGODB_PASSWD)}@{MONGODB_HOST}:{MONGODB_PORT}/{MONGODB_AUTH_DB}'
 
 _mapping = {
     'mappings': {
@@ -400,7 +400,7 @@ def create_index(name, shard, replica):
         click.echo(f'Index `{name}` created!')
 
 
-@cli.command('drop', short_help='Drop the index of the given name.')
+@cli.command('drop', short_help='Drop the index matches the given name.')
 @click.option('--name', '-n', help='Name of the index.')
 @click.confirmation_option(
     prompt='Are you sure you want to drop this index?'

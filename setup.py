@@ -21,7 +21,7 @@ setup(
     version=version,
     author='TnTomato',
     author_email='474093103@qq.com',
-    description='Retrieve from ElasticSearch',
+    description='Retrieve cases from ElasticSearch',
     # long_description=readme,
     url='https://github.com/EathonTnT/casearch',
     license='MIT',
@@ -31,7 +31,7 @@ setup(
         'elasticsearch>=6.3.0',
         'elasticsearch_dsl>=6.3.0',
         'click>=7.0',
-        'pymongo>=3.0.0',
+        'pymongo>=3.6.0',
         'python-dotenv>=0.10.0'
     ],
     entry_points={

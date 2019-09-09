@@ -112,6 +112,7 @@ class CaseRetriever(object):
         s = s.query('bool',
                     must=nested_q,
                     filter=filter_conds)
+
         # Pagination
         s = s[(page - 1) * size:size * page]
 

@@ -10,16 +10,15 @@ from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
 
-if os.getenv('ESHOSTS'):
-    host_value = os.getenv('ESHOSTS')
-else:
-    host_value = '127.0.0.1:9200'
-ES_HOSTS = host_value.split(' ')
-ES_USER = os.getenv('ESUSER')
-ES_PASSWD = os.getenv('ESPASSWD')
+# Elasticsearch configurations
+_host_value = os.getenv('ES_HOSTS') or '127.0.0.1:9200'
+ES_HOSTS = _host_value.split(' ')
+ES_USER = os.getenv('ES_USER')
+ES_PASSWD = os.getenv('ES_PASSWD')
 
-MONGODB_HOST = os.getenv('MONGOHOST') or '127.0.0.1'
-MONGODB_PORT = os.getenv('MONGOPORT') or 27017
-MONGODB_USER = os.getenv('MONGOUSER')
-MONGODB_PASSWD = os.getenv('MONGOPASSWD')
-MONGODB_DB = os.getenv('MONGODB')
+# MongoDB configurations
+MONGODB_HOST = os.getenv('MONGO_HOST') or '127.0.0.1'
+MONGODB_PORT = os.getenv('MONGO_PORT') or 27017
+MONGODB_USER = os.getenv('MONGO_USER')
+MONGODB_PASSWD = os.getenv('MONGO_PASSWD')
+MONGODB_AUTH_DB = os.getenv('MONGO_AUTH_DB')
