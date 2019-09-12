@@ -174,7 +174,10 @@ def _get_docs(coll, query=None, projection=None, size=100, oid=None):
             i = 0
 
 
-def _run(case_docs, field_coll, index, type):
+def _run(case_docs, db, field, index, type):
+    _client = MongoClient(_mongo_uri)
+    case_db = _client[db]
+    field_coll = case_db[field]
     es = _get_es()
     case_ids = [doc.get('id') for doc in case_docs if doc.get('id')]
     field_docs = field_coll.find({'id': {'$in': case_ids}})
@@ -461,7 +464,6 @@ def sync(worker, size, db, case, field, index, type, flag):
     _client = MongoClient(_mongo_uri)
     case_db = _client[db]
     case_coll = case_db[case]
-    field_coll = case_db[field]
     num_of_process = worker
     if flag:
         first_id = flag
@@ -479,8 +481,7 @@ def sync(worker, size, db, case, field, index, type, flag):
                           },
                           size=size,
                           oid=oid):
-        pool.apply_async(_run, (docs, field_coll, index, type))
-        click.echo('One worker is applied.')
+        pool.apply_async(_run, (docs, db, field, index, type))
     pool.close()
     pool.join()
 
