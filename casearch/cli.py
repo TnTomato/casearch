@@ -421,7 +421,7 @@ def drop_index(name):
 
 @cli.command(
     'sync',
-    short_help='Sync data from MongoDB to Elasticsearch.'
+    short_help='Syncronize data from MongoDB to Elasticsearch.'
 )
 @click.option(
     '--worker',

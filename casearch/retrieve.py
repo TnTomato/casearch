@@ -89,8 +89,14 @@ class CaseRetriever(object):
         size = kwargs.get('size') or 10
 
         # Build DSL
-        tag_musts = [Q('match', fields__name=name) for name in tag_names]
-        nested_q = Q('nested', path='fields', query=Q('bool', must=tag_musts))
+        nested_q = [
+            Q('nested',
+              path='fields',
+              query=Q('bool',
+                      must=Q('match',
+                             fields__name=name)))
+            for name in tag_names
+        ]
 
         filter = kwargs.get('filter') or {}
         if not isinstance(filter, dict):
